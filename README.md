@@ -1,0 +1,2 @@
+# philosophers
+Discovering Linux threads
