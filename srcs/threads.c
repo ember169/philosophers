@@ -6,33 +6,38 @@
 /*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:55 by lgervet           #+#    #+#             */
-/*   Updated: 2026/03/13 16:56:54 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/03/13 20:43:50 by lgervet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
 
-static void	*run(void *arg)
+static void	*routine(void *arg)
 {
-	pthread_t	this;
+	t_philo	*philosopher;
 
-	this = pthread_self();
+	philosopher = (t_philo *)arg;
 	while (1)
 	{
-		printf("> thread %lu running...\n", (unsigned long)this);
-		usleep(5000);
+		printf("> Philosopher id=%d\n", philosopher->id);
+		usleep(20000);
 	}
-	return (arg);
+	return (philosopher);
 }
 
-int	create_thread(pthread_t *threads, int n)
+int	create_thread(t_philo *philosophers, int n, t_rules *rules)
 {
-	int	i;
+	t_philo	*this;
+	int		i;
 
 	i = 0;
 	while (i < n)
 	{
-		if (pthread_create(&threads[i], NULL, &run, NULL) != 0)
+		this = &philosophers[i];
+		this->id = i;
+		this->has_fork = 0;
+		this->rules = rules;
+		if (pthread_create(&this->thread_id, NULL, &routine, this) != 0)
 		{
 			printf("[!] ERROR: pthread create failed\n");
 			return (0);
