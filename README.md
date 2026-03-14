@@ -54,21 +54,24 @@ Run the program with the following arguments:
 ## Resources
 
 ### Documentation
-
-- [pthreads, Linux Manpage](https://man7.org/linux/man-pages/man7/pthreads.7.html)
-- [Multithreading in C, Geeksforgeeks, 2025](https://www.geeksforgeeks.org/c/multithreading-in-c/)
-- [Why Are Threads Needed On Single Core Processors, Core Dumped, 2025](https://www.youtube.com/watch?v=M9HHWFp84f0)
-- [Threads On Multicore Systems, Core Dumped, 2025](https://www.youtube.com/watch?v=5sw9XJokAqw)
-- [The gettimeofday() Function, C for dummies, 2020](https://c-for-dummies.com/blog/?p=4236)
-- [Passing struct to pthread as an argument, Stack overflow, 2014](https://stackoverflow.com/questions/20196121/passing-struct-to-pthread-as-an-argument)
+#### Concept & Theory
 - [Dining Philosophers' problem, Wikipedia](https://en.wikipedia.org/wiki/Dining_philosophers_problem)
 - [Mutual Exclusion, Wikipedia](https://en.wikipedia.org/wiki/Mutual_exclusion)
 - [Lock in computer science, Wikipedia](https://en.wikipedia.org/wiki/Lock_(computer_science))
 - [Spinlock, Wikipedia](https://en.wikipedia.org/wiki/Spinlock)
 - [Test and set, Wikipedia](https://en.wikipedia.org/wiki/Test-and-set)
-- [Pthread mutex lock, Pubs opengroup](https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_lock.html)
-- [Pthread mutex init, Pubs opengroup](https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_init.html)
-- [ANSI codes for terminal colors, Github](https://github.com/SanderMertens/colorize/blob/master/colorize.c)
+- [Why Are Threads Needed On Single Core Processors, Core Dumped, 2025](https://www.youtube.com/watch?v=M9HHWFp84f0)
+- [Threads On Multicore Systems, Core Dumped, 2025](https://www.youtube.com/watch?v=5sw9XJokAqw)
+
+#### Learning Resources (Threads & Mutex)
+- [Unix Threads in C, Youtube, 2021](https://www.youtube.com/playlist?list=PLfqABt5AS4FmuQf70psXrsMLEDQXNkLq2)
+- [Multithreading in C, Geeksforgeeks, 2025](https://www.geeksforgeeks.org/c/multithreading-in-c/)
+- [Threads mutex et programmation concurrente en C, Codequoi, 2022](https://www.codequoi.com/threads-mutex-et-programmation-concurrente-en-c/)
+
+#### Technical Reference & Helpers
+- **Manpages**: [pthreads](https://man7.org/linux/man-pages/man7/pthreads.7.html), [pthread_mutex_lock](https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_lock.html), [pthread_mutex_init](https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_init.html)
+- **Code tips**: [The gettimeofday() function](https://c-for-dummies.com/blog/?p=4236), [Passing struct to pthread as an argument](https://stackoverflow.com/questions/20196121/passing-struct-to-pthread-as-an-argument), [ANSI codes for terminal colors](https://github.com/SanderMertens/colorize/blob/master/colorize.c)
+- **Vizualisation & debugging**:[Philogramm](https://github.com/sugoidesune/42philogramm), [Data Race detection (-fsanitize=thread)](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual)
 
 ### AI Usage
 *Building...*
