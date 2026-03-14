@@ -8,6 +8,7 @@ Discovering Linux threads and mutexes through the classic [Philosopher's dining 
 This project is a simulation of the classic synchronization problem. Several philosophers sit at a round table, alternating between eating, sleeping, and thinking.
 
 ### The Rules
+*[Subject](https://cdn.intra.42.fr/pdf/pdf/199862/en.subject.pdf)*
 - Dining Setup: One philosopher, one bowl of spaghetti, and as many forks as there are philosophers.
 - The Fork Dilemma: A philosopher needs two forks to eat—the one to their left and the one to their right.
 - The Routine: 
