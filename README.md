@@ -11,15 +11,18 @@ This project is a simulation of the classic synchronization problem. Several phi
 - Dining Setup: One philosopher, one bowl of spaghetti, and as many forks as there are philosophers.
 - The Fork Dilemma: A philosopher needs two forks to eat—the one to their left and the one to their right.
 - The Routine: 
-	1.  Eat: Pick up two forks, eat for a set time.
-    2.  Sleep: Put down forks and rest.
-    3.  Think: Wait for forks to become available again.
+  1.  Eat: Pick up two forks, eat for a set time.
+  2.  Sleep: Put down forks and rest.
+  3.  Think: Wait for forks to become available again.
 - Survival: Philosophers must eat within a specific timeframe or they will die of starvation.
 - Constraints:
-    1. Philosophers do not communicate.
-    2. They have no knowledge of the health status of others.
-    3. The simulation stops immediately if a philosopher dies.
-	4. Authorized external functions: `memset`, `printf`, `malloc`, `free`, `write`, `usleep`, `gettimeofday`, `pthread_create`, `pthread_detach`, `pthread_join`, `pthread_mutex_init`, `pthread_mutex_destroy`, `pthread_mutex_lock`, `pthread_mutex_unlock`
+  1. Philosophers do not communicate.
+  2. They have no knowledge of the health status of others.
+  3. The simulation stops immediately if a philosopher dies.
+  4. Authorized external functions: 
+	```
+	memset, printf, malloc, free, write, usleep, gettimeofday, pthread_create, pthread_detach, pthread_join, pthread_mutex_init, pthread_mutex_destroy, pthread_mutex_lock, pthread_mutex_unlock
+	```
 
 ### Implementation
 *Building...*
@@ -27,12 +30,14 @@ This project is a simulation of the classic synchronization problem. Several phi
 ## Instructions
 
 ### Compiling
-Run `make` in root repertory to compile the binary.
+Run `make` in root repertory to compile the binary.<br>
 Run `make re` to delete and recompile the binary.
 
 ### Executing
 Run the program with the following arguments:
-```./philo <number_of_philosophers> <time_to_die> <time_to_eat> <time_to_sleep> [number_of_times_each_philosopher_must_eat]```<br>
+```
+./philo <number_of_philosophers> <time_to_die> <time_to_eat> <time_to_sleep> [number_of_times_each_philosopher_must_eat]
+```
 
 **Arguments:**
 1. `number_of_philosophers`: Number of philosophers and forks.
@@ -42,7 +47,9 @@ Run the program with the following arguments:
 5. `number_of_times_each_philosopher_must_eat` (Optional): If all philosophers eat this many times, the simulation stops.<br>
 
 **Example**:
-```./philo 5 800 200 200```
+```
+./philo 5 800 200 200
+```
 
 ## Resources
 
@@ -64,3 +71,4 @@ Run the program with the following arguments:
 - [ANSI codes for terminal colors, Github](https://github.com/SanderMertens/colorize/blob/master/colorize.c)
 
 ### AI Usage
+*Building...*
