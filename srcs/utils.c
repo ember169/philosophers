@@ -6,11 +6,23 @@
 /*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:06 by lgervet           #+#    #+#             */
-/*   Updated: 2026/03/13 15:58:38 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/03/14 09:56:23 by lgervet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
+
+// Seconds : tv.tv_sec
+// Microseconds: tv.tv_usec
+// Minutes west of Greenwich: tz.tz_minuteswest
+time_t	get_time(void)
+{
+	struct timeval	tv;
+	struct timezone	tz;
+
+	gettimeofday(&tv, &tz);
+	return (tv.tv_usec);
+}
 
 int	get_rules(t_rules *rules, char **av)
 {

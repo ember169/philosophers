@@ -6,7 +6,7 @@
 /*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 18:18:19 by lgervet           #+#    #+#             */
-/*   Updated: 2026/03/13 18:25:00 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/03/14 09:54:41 by lgervet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ typedef struct s_fork
 	int	taken;
 }	t_fork;
 
-
 typedef struct s_rules
 {
+	time_t	launch_time;
 	int		philosophers_nb;
 	int		time_to_die;
 	int		time_to_eat;
