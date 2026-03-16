@@ -6,47 +6,66 @@
 /*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:55 by lgervet           #+#    #+#             */
-/*   Updated: 2026/03/14 10:24:37 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/03/16 15:56:30 by lgervet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
 
+static int	try_to_eat(t_philo *philosopher)
+{
+	if (!pthread_mutex_lock(*philosopher->left_fork) &&\
+!pthread_mutex_lock(*philosopher->left_fork))
+		return (0);
+
+	philosopher->last_meal_time = get_time();
+	printf("%ld %d is eating\n", get_time(), philosopher->id);
+	usleep(philosopher->rules->time_to_eat);
+	pthread_mutex_unlock(*philosopher->left_fork);
+	pthread_mutex_unlock(*philosopher->right_fork);
+	return (1);
+}
+
 static void	*routine(void *arg)
 {
 	t_philo	*philosopher;
-	time_t	time_since_launch;
+	int		ate;
 
 	philosopher = (t_philo *)arg;
-	time_since_launch = get_time() - philosopher->rules->launch_time;
 	printf(PF_GREEN"%ld %d is born"PF_RESET"\n", get_time(), philosopher->id);
-	while (philosopher->rules->time_to_die < time_since_launch)
+	while (1)
 	{
-		printf("%ld %d is thinking\n", get_time(), philosopher->id);
-		time_since_launch = philosopher->rules->launch_time - get_time();
+		ate = try_to_eat(philosopher);
+		if (ate)
+		{
+			printf("%ld %d is sleeping\n", get_time(), philosopher->id);
+			usleep(philosopher->rules->time_to_sleep);
+			printf("%ld %d is thinking\n", get_time(), philosopher->id);
+		}
 	}
-	printf(PF_RED"%ld %d died"PF_RESET"\n", get_time(), philosopher->id);
-	pthread_detach(philosopher->thread_id);
 	return (NULL);
 }
 
-int	create_thread(t_philo *philosophers, int n, t_rules *rules)
+int	create_threads(t_philo *philosophers, int n, t_rules *rules, \
+pthread_mutex_t **forks)
 {
-	t_philo	*this;
-	int		i;
+	t_philo			*this;
+	int				i;
 
 	i = 1;
 	while (i <= n)
 	{
 		this = &philosophers[i];
 		this->id = i;
-		this->has_fork = 0;
+		this->last_meal_time = get_time();
 		this->rules = rules;
+		this->left_fork = &forks[i];
+		if (i == n)
+			this->right_fork = &forks[0];
+		else
+			this->right_fork = &forks[i + 1];
 		if (pthread_create(&this->thread_id, NULL, &routine, this) != 0)
-		{
-			printf("[!] ERROR: pthread create failed\n");
-			return (0);
-		}
+			return (-1);
 		i++;
 	}
 	return (1);
