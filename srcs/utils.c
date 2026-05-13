@@ -6,41 +6,50 @@
 /*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:06 by lgervet           #+#    #+#             */
-/*   Updated: 2026/03/14 13:41:09 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/04/14 10:04:59 by lgervet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/philosophers.h"
+#include "../includes/includes.h"
 
-// Seconds : tv.tv_sec
-// Microseconds: tv.tv_usec
-// Minutes west of Greenwich: tz.tz_minuteswest
-time_t	get_time(void)
+void	clean_exit(t_philo *philos, pthread_mutex_t *forks)
 {
-	struct timeval	tv;
-	struct timezone	tz;
+	int	i;
+	int	philos_nb;
 
-	gettimeofday(&tv, &tz);
-	return (tv.tv_usec);
+	if (!philos || !forks)
+		return ;
+	i = 0;
+	philos_nb = philos->rules->philosophers_nb;
+	while (i < philos_nb - 1)
+	{
+		printf("Waiting for thread %d to join\n", i);
+		pthread_join(philos[i].thread_id, NULL);
+		i++;
+	}
+	printf("[i] All threads joined\n");
+	free(philos);
+	printf("[i] All philo freed\n");
+	i = 0;
+	while (i < philos_nb)
+	{
+		pthread_mutex_destroy(&forks[i]);
+		i++;
+	}
+	free(forks);
+	return ;
 }
 
-int	get_rules(t_rules *rules, char **av)
+/*
+** c_sleep:
+**     Custom sleep that converts ms to us
+**
+**     @param param  Description.
+**     @return Valeur retour.
+*/
+void	c_sleep(double ms)
 {
-	rules->philosophers_nb = atoi(av[1]);
-	rules->time_to_die = atoi(av[2]);
-	rules->time_to_eat = atoi(av[3]);
-	rules->time_to_sleep = atoi(av[4]);
-	if (av[5])
-		rules->must_eat_number = atoi(av[5]);
-	// TODO: implem les limites aux regles donnees
-		// Notes:
-			// dans tout les cas  : time_to_die > time_to_eat + time_to_sleep
-			// ET
-			// Pour n pair : time_to_die > 2 * time_to_eat
-			// Pour n impair : time_to_die > (2 * NB) / (NB -1)) * time_to_eat
-	if ((rules->philosophers_nb < 1 || rules->time_to_die < 1 || \
-rules->time_to_eat < 1 || rules->time_to_sleep < 1) || \
-(av[5] && rules->must_eat_number < 1))
-		return (0);
-	return (1);
+	usleep(ms * 1000);
 }
+
+

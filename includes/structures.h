@@ -6,7 +6,7 @@
 /*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 18:18:19 by lgervet           #+#    #+#             */
-/*   Updated: 2026/03/16 15:25:26 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/04/14 10:26:03 by lgervet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,25 @@
 
 typedef struct s_rules
 {
-	time_t	launch_time;
-	int		philosophers_nb;
-	int		time_to_die;
-	int		time_to_eat;
-	int		time_to_sleep;
-	int		must_eat_number;
+	double		launch_time;
+	int			philosophers_nb;
+	int			time_to_die;
+	int			time_to_eat;
+	int			time_to_sleep;
+	int			must_eat_number;
+	pthread_t	*manager;
 }	t_rules;
 
 typedef struct s_philosopher
 {
 	int					id;
-	time_t				last_meal_time;
+	int					should_die;
+	double				last_meal_time;
+	pthread_mutex_t		*meal_mutex;
 	t_rules				*rules;
 	pthread_t			thread_id;
-	pthread_mutex_t		**left_fork;
-	pthread_mutex_t		**right_fork;
+	pthread_mutex_t		*left_fork;
+	pthread_mutex_t		*right_fork;
 }	t_philo;
 
 #endif

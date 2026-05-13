@@ -1,23 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.h                                     :+:      :+:    :+:   */
+/*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/06 14:05:04 by lgervet           #+#    #+#             */
-/*   Updated: 2026/03/16 14:56:34 by lgervet          ###   ########.fr       */
+/*   Created: 2026/04/13 16:15:48 by lgervet           #+#    #+#             */
+/*   Updated: 2026/04/13 17:02:24 by lgervet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILOSOPHERS_H
-# define PHILOSOPHERS_H
+#include "../includes/includes.h"
 
-# include "includes.h"
+// Seconds : tv.tv_sec
+// Microseconds: tv.tv_usec
+// Minutes west of Greenwich: tz.tz_minuteswest
 
-int		create_threads(t_philo *philosophers, int n, t_rules *rules, \
-pthread_mutex_t **forks);
-int		get_rules(t_rules *rules, char **av);
-time_t	get_time(void);
+double	get_time_ms(void)
+{
+	struct timeval	tv;
 
-#endif
+	gettimeofday(&tv, NULL);
+	return ((double)tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+double	get_time_since_launch(t_rules *rules)
+{
+	return (get_time_ms() - rules->launch_time);
+}

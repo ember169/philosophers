@@ -6,7 +6,7 @@
 #    By: lgervet <42@leogervet.com>                 +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/06 13:42:29 by lgervet           #+#    #+#              #
-#    Updated: 2026/03/13 15:52:11 by lgervet          ###   ########.fr        #
+#    Updated: 2026/04/13 17:22:23 by lgervet          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,9 +19,12 @@ SRCSDIR		:= srcs
 OBJSDIR		:= objs
 
 SRCS		:= \
-				philo.c \
-				threads.c \
-				utils.c
+				main.c \
+				initializer.c \
+				philo_threads.c \
+				threads_manager.c \
+				utils.c \
+				time.c
 OBJS		:= $(SRCS:%.c=$(OBJSDIR)/%.o)
 
 all: $(NAME)
