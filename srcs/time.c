@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
+/*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 16:15:48 by lgervet           #+#    #+#             */
-/*   Updated: 2026/04/13 17:02:24 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/05/21 11:49:41 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ double	get_time_ms(void)
 	return ((double)tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-double	get_time_since_launch(t_rules *rules)
+double	get_uptime(t_rules *rules)
 {
 	return (get_time_ms() - rules->launch_time);
 }

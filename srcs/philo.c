@@ -1,16 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_threads.c                                    :+:      :+:    :+:   */
+/*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
+/*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:55 by lgervet           #+#    #+#             */
-/*   Updated: 2026/04/14 10:09:39 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/05/24 14:23:03 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/includes.h"
+
+/*
+** try_to_eat_one:
+**     Manages the case of only one Philosopher
+**
+**     @param *philo	Pointer to current philosopher structure.
+**     @return true / false if coudnt eat.
+*/
+static bool	try_to_eat_one(t_philo *philo)
+{
+	if (!philo || !philo->left_fork || !philo->right_fork)
+		return (false);
+	pthread_mutex_lock(philo->left_fork);
+	pthread_mutex_lock(philo->meal_mutex);
+	philo->last_meal_time = get_uptime(philo->rules);
+	philo->meals_eaten++;
+	print_state(philo->rules, philo->last_meal_time, philo->id, "is eating");
+	pthread_mutex_unlock(philo->meal_mutex);
+	c_sleep(philo->rules->time_to_eat);
+	pthread_mutex_unlock(philo->left_fork);
+	return (true);
+}
 
 /*
 ** try_to_eat:
@@ -22,18 +44,36 @@
 */
 static bool	try_to_eat(t_philo *philo)
 {
+	bool	res;
+
+	res = true;
 	if (!philo || !philo->left_fork || !philo->right_fork)
 		return (false);
-	pthread_mutex_lock(philo->left_fork);
-	pthread_mutex_lock(philo->right_fork);
-	pthread_mutex_lock(philo->meal_mutex);
-	philo->last_meal_time = get_time_since_launch(philo->rules);
-	printf("%f:.2f %d is eating\n", philo->last_meal_time, philo->id);
-	pthread_mutex_unlock(philo->meal_mutex);
-	c_sleep(philo->rules->time_to_eat);
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
-	return (true);
+	if (philo->rules->philosophers_nb == 1)
+		res = try_to_eat_one(philo);
+	else
+	{
+		if (philo->id % 2 == 0)
+		{
+			pthread_mutex_lock(philo->left_fork);
+			pthread_mutex_lock(philo->right_fork);
+		}
+		else
+		{
+			pthread_mutex_lock(philo->right_fork);
+			pthread_mutex_lock(philo->left_fork);
+		}
+		pthread_mutex_lock(philo->meal_mutex);
+		philo->last_meal_time = get_uptime(philo->rules);
+		philo->meals_eaten++;
+		print_state(philo->rules, philo->last_meal_time, \
+philo->id, "is eating");
+		pthread_mutex_unlock(philo->meal_mutex);
+		c_sleep(philo->rules->time_to_eat);
+		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(philo->right_fork);
+	}
+	return (res);
 }
 
 /*
@@ -43,28 +83,41 @@ static bool	try_to_eat(t_philo *philo)
 static void	*routine(void *arg)
 {
 	t_philo	*philo;
-	int		ate;
 
 	if (!arg)
 		return (NULL);
 	philo = (t_philo *)arg;
-	printf(PF_GREEN"%f %d is born"PF_RESET"\n", \
-get_time_since_launch(philo->rules), philo->id);
-	while (!philo->should_die)
+	while (true)
 	{
-		ate = try_to_eat(philo);
-		if (ate)
+		pthread_mutex_lock(philo->meal_mutex);
+		if (philo->should_die)
 		{
-			printf("%f:.2f %d is sleeping\n", \
-get_time_since_launch(philo->rules), philo->id);
-			c_sleep(philo->rules->time_to_sleep);
-			printf("%f:.2f %d is thinking\n", \
-get_time_since_launch(philo->rules), philo->id);
+			pthread_mutex_unlock(philo->meal_mutex);
+			break ;
 		}
+		pthread_mutex_unlock(philo->meal_mutex);
+		if (try_to_eat(philo))
+		{
+			if (philo->rules->must_eat_number > 0 && \
+(philo->meals_eaten >= philo->rules->must_eat_number))
+			{
+				print_state(philo->rules, get_uptime(philo->rules), \
+philo->id, "has eaten enough");
+				pthread_mutex_lock(philo->meal_mutex);
+				philo->should_die = 1;
+				pthread_mutex_unlock(philo->meal_mutex);
+				break ;
+			}
+			print_state(philo->rules, get_uptime(philo->rules), \
+philo->id, "is sleeping");
+			c_sleep(philo->rules->time_to_sleep);
+			print_state(philo->rules, get_uptime(philo->rules), \
+philo->id, "is thinking");
+		}
+		else
+			usleep(1000);
 	}
-	printf(PF_RED"%f %d died\n"PF_RESET, \
-get_time_since_launch(philo->rules), philo->id);
-	pthread_join(philo->thread_id, NULL);
+	print_state(philo->rules, get_uptime(philo->rules), philo->id, "died");
 	return (NULL);
 }
 
@@ -84,7 +137,7 @@ get_time_since_launch(philo->rules), philo->id);
 **     @param *forks	Pointer to forks array
 **     @return true / false if failure.
 */
-bool	create_threads(
+bool	spawn_philos(
 	t_philo *philos,
 	int n,
 	t_rules *rules,
@@ -100,11 +153,12 @@ bool	create_threads(
 	{
 		philos[i].id = i + 1;
 		philos[i].should_die = 0;
+		philos[i].meals_eaten = 0;
 		philos[i].meal_mutex = malloc(sizeof(pthread_mutex_t));
 		if (!philos[i].meal_mutex)
 			return (false);
 		pthread_mutex_init(philos[i].meal_mutex, NULL);
-		philos[i].last_meal_time = get_time_since_launch(rules);
+		philos[i].last_meal_time = get_uptime(rules);
 		philos[i].rules = rules;
 		philos[i].left_fork = &forks[i];
 		philos[i].right_fork = &forks[(i + 1) % n];

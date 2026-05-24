@@ -25,7 +25,46 @@ This project is a simulation of the classic synchronization problem. Several phi
 
 
 ### Implementation
-*Building...*
+
+#### Architecture Overview
+
+```
+./philo <nb_philos> <time_to_die> <time_to_eat> <time_to_sleep> [must_eat_nb]
+          │
+          ▼
+       main.c
+  ┌──────────────────────────────────────────────────────────┐
+  │  1. get_rules()       → parse args into t_rules          │
+  │  2. malloc(t_philo[]) → array of N philosophers          │
+  │  3. malloc(mutex[])   → array of N fork mutexes          │
+  │  4. alloc_forks()     → pthread_mutex_init each fork     │
+  │  5. initialize_threads()                                 │
+  │       ├─ create_threads() → spawn N philo threads        │
+  │       └─ pthread_create  → spawn 1 manager thread        │
+  │  6. pthread_join(manager) → wait for simulation end      │
+  │  7. (main calls clean_exit on exit)                   │
+  └──────────────────────────────────────────────────────────┘
+
+Philosopher threads (routine):          Manager thread (manage_philo):
+  while (!should_die):                    infinite loop:
+    try_to_eat()                            for each philo:
+      lock left_fork                          check time since last meal
+      lock right_fork                         if > time_to_die → mark dead
+      update last_meal_time (meal_mutex)    if any dead → clean_exit()
+      sleep(time_to_eat)
+      unlock forks
+    sleep(time_to_sleep)
+    think
+  print "died"
+```
+
+**Data structures:**
+- `t_rules` — shared config: N, time_to_die/eat/sleep, must_eat_number, launch_time, manager thread
+- `t_philo` — per philosopher: id, should_die, last_meal_time, meal_mutex, thread_id, left/right fork ptrs, rules ptr
+
+**Key mutexes:**
+- N fork mutexes (in forks[] array) — prevent two philosophers using same fork
+- Per-philosopher meal_mutex — protect last_meal_time reads/writes
 
 ## Instructions
 
@@ -50,6 +89,15 @@ Run the program with the following arguments:
 ```
 ./philo 5 800 200 200
 ```
+
+### Verification
+
+- `make` should compile with `-Wall -Wextra -Werror` and no warnings
+- `./philo 5 800 200 200` — should run indefinitely with no deaths
+- `./philo 1 800 200 200` — philosopher should die after ~800ms
+- `./philo 4 310 200 100` — a philosopher should die
+- `./philo 5 800 200 200 7` — should stop after each philosopher eats 7 times
+- Run with `-fsanitize=thread` (already in Makefile) — zero data race reports
 
 ## Resources
 

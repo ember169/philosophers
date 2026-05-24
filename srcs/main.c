@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
+/*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 14:05:18 by lgervet           #+#    #+#             */
-/*   Updated: 2026/04/14 10:26:37 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/05/21 18:14:29 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,21 +31,19 @@ int	main(int ac, char **av)
 
 	if (ac < 5)
 		return (1);
-
 	if (!get_rules(&rules, av))
 		return (1);
-
 	philosophers = malloc(rules.philosophers_nb * sizeof(t_philo));
 	if (!philosophers)
-		return (1);
-
+		return (2);
 	forks = malloc(rules.philosophers_nb * sizeof(pthread_mutex_t));
 	if (!forks || !alloc_forks(forks, rules.philosophers_nb))
-		return (clean_exit(philosophers, forks), 1);
-
+		return (clean_exit(philosophers, forks, &rules), 1);
 	if (!initialize_threads(philosophers, &rules, forks))
-		return (clean_exit(philosophers, forks), 1);
-
+	{
+		printf("Couldnt init threads\n");
+		return (clean_exit(philosophers, forks, &rules), 1);
+	}
 	pthread_join(rules.manager, NULL);
-	return (clean_exit(philosophers, forks), 0);
+	return (clean_exit(philosophers, forks, &rules), 0);
 }

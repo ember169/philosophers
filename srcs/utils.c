@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
+/*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:06 by lgervet           #+#    #+#             */
-/*   Updated: 2026/04/14 10:04:59 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/05/21 17:52:09 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/includes.h"
 
-void	clean_exit(t_philo *philos, pthread_mutex_t *forks)
+void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules)
 {
 	int	i;
 	int	philos_nb;
@@ -20,16 +20,15 @@ void	clean_exit(t_philo *philos, pthread_mutex_t *forks)
 	if (!philos || !forks)
 		return ;
 	i = 0;
-	philos_nb = philos->rules->philosophers_nb;
-	while (i < philos_nb - 1)
+	philos_nb = rules->philosophers_nb;
+	while (i < philos_nb)
 	{
 		printf("Waiting for thread %d to join\n", i);
 		pthread_join(philos[i].thread_id, NULL);
+		free(philos[i].meal_mutex);
 		i++;
 	}
-	printf("[i] All threads joined\n");
 	free(philos);
-	printf("[i] All philo freed\n");
 	i = 0;
 	while (i < philos_nb)
 	{
@@ -37,7 +36,8 @@ void	clean_exit(t_philo *philos, pthread_mutex_t *forks)
 		i++;
 	}
 	free(forks);
-	return ;
+	pthread_mutex_destroy(rules->print_mutex);
+	free(rules->print_mutex);
 }
 
 /*
@@ -52,4 +52,9 @@ void	c_sleep(double ms)
 	usleep(ms * 1000);
 }
 
-
+void	print_state(t_rules *rules, double t, int id, const char *msg)
+{
+	pthread_mutex_lock(rules->print_mutex);
+	printf("%f %d %s.\n", t, id, msg);
+	pthread_mutex_unlock(rules->print_mutex);
+}

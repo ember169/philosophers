@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: lgervet <42@leogervet.com>                 +#+  +:+       +#+         #
+#    By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/06 13:42:29 by lgervet           #+#    #+#              #
-#    Updated: 2026/04/13 17:22:23 by lgervet          ###   ########.fr        #
+#    Updated: 2026/05/24 13:27:10 by mskn             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,9 +20,9 @@ OBJSDIR		:= objs
 
 SRCS		:= \
 				main.c \
-				initializer.c \
-				philo_threads.c \
-				threads_manager.c \
+				init.c \
+				philo.c \
+				manager.c \
 				utils.c \
 				time.c
 OBJS		:= $(SRCS:%.c=$(OBJSDIR)/%.o)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prototypes.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lgervet <42@leogervet.com>                 +#+  +:+       +#+        */
+/*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 14:05:04 by lgervet           #+#    #+#             */
-/*   Updated: 2026/04/14 10:02:24 by lgervet          ###   ########.fr       */
+/*   Updated: 2026/05/24 14:12:13 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,15 @@ bool	initialize_threads(
 			t_philo *philos,
 			t_rules *rules,
 			pthread_mutex_t *forks);
-bool	create_threads(
-			t_philo *philo,
+bool	spawn_philos(t_philo *philo,
 			int n,
 			t_rules *rules,
 			pthread_mutex_t *forks);
-void	*manage_philo(
-			t_philo *philos,
-			t_rules rules,
-			pthread_mutex_t *forks);
+void	*manage_philo(void *arg);
 double	get_time_ms(void);	
-double	get_time_since_launch(t_rules *rules);
+double	get_uptime(t_rules *rules);
 void	c_sleep(double ms);
-void	clean_exit(t_philo *philos, pthread_mutex_t *forks);
+void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules);
+void	print_state(t_rules *rules, double t, int id, const char *msg);
 
 #endif
