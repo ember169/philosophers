@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:12:37 by lgervet           #+#    #+#             */
-/*   Updated: 2026/05/24 14:20:29 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/05 11:23:03 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@ bool	get_rules(t_rules *rules, char **av)
 rules->time_to_eat < 1 || rules->time_to_sleep < 1) || \
 (av[5] && rules->must_eat_number < 1))
 		return (false);
-    rules->print_mutex = malloc(sizeof(pthread_mutex_t));
-    if (!rules->print_mutex)
-        return (false);
-    pthread_mutex_init(rules->print_mutex, NULL);
+	rules->print_mutex = malloc(sizeof(pthread_mutex_t));
+	if (!rules->print_mutex)
+		return (false);
+	pthread_mutex_init(rules->print_mutex, NULL);
 	return (true);
 }
 

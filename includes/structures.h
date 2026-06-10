@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 18:18:19 by lgervet           #+#    #+#             */
-/*   Updated: 2026/05/21 18:13:37 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/10 11:20:05 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ typedef struct s_rules
 typedef struct s_philosopher
 {
 	int					id;
-	int					should_die;
+	bool				should_die;
+	bool				ate_enough;
 	int					meals_eaten;
 	double				last_meal_time;
 	pthread_mutex_t		*meal_mutex;

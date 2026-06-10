@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:06 by lgervet           #+#    #+#             */
-/*   Updated: 2026/05/21 17:52:09 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/10 10:48:05 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules)
 	philos_nb = rules->philosophers_nb;
 	while (i < philos_nb)
 	{
-		printf("Waiting for thread %d to join\n", i);
 		pthread_join(philos[i].thread_id, NULL);
 		free(philos[i].meal_mutex);
 		i++;
@@ -55,6 +54,6 @@ void	c_sleep(double ms)
 void	print_state(t_rules *rules, double t, int id, const char *msg)
 {
 	pthread_mutex_lock(rules->print_mutex);
-	printf("%f %d %s.\n", t, id, msg);
+	printf("%ld %d %s\n", (long)t, id, msg);
 	pthread_mutex_unlock(rules->print_mutex);
 }

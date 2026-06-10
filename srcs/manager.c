@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 16:59:17 by lgervet           #+#    #+#             */
-/*   Updated: 2026/05/24 14:11:34 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/10 11:36:46 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,27 +21,63 @@ static bool	_is_dead(t_philo *philo, t_rules *rules)
 	res = false;
 	pthread_mutex_lock(philo->meal_mutex);
 	time_since_meal = get_uptime(rules) - philo->last_meal_time;
-	if (philo->should_die == 1 || time_since_meal > rules->time_to_die)
+	if (philo->should_die == true || time_since_meal > rules->time_to_die)
 	{
-		philo->should_die = 1;
+		philo->should_die = true;
 		res = true;
 	}
 	pthread_mutex_unlock(philo->meal_mutex);
 	return (res);
 }
 
-// check death condition for every philos
-static bool	_are_dead(t_philo *philos, t_rules *rules)
+// check death condition for every philos. If met for one
+// sets should_die to all
+static bool	_all_are_dead(t_philo *philos, t_rules *rules)
 {
 	int	i;
+	int	j;
 
 	i = 0;
 	while (i < rules->philosophers_nb)
 	{
 		if (_is_dead(&philos[i], rules))
+		{
+			j = 0;
+			while (j < rules->philosophers_nb)
+			{
+				pthread_mutex_lock(philos[j].meal_mutex);
+				philos[j].should_die = true;
+				pthread_mutex_unlock(philos[j].meal_mutex);
+				j++;
+			}
 			return (true);
+		}
 		i++;
 	}
+	return (false);
+}
+
+static bool	_all_ate_enough(t_philo *philos, t_rules *rules)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (i < rules->philosophers_nb)
+	{
+		pthread_mutex_lock(philos[i].meal_mutex);
+		if (philos[i].meals_eaten == rules->must_eat_number
+			|| philos[i].ate_enough == true)
+		{
+			philos[i].ate_enough = true;
+			j++;
+		}
+		pthread_mutex_unlock(philos[i].meal_mutex);
+		i++;
+	}
+	if (j == rules->philosophers_nb)
+		return (true);
 	return (false);
 }
 
@@ -49,10 +85,26 @@ void	*manage_philo(void *arg)
 {
 	t_philo	*philos;
 	t_rules	*rules;
+	int		k;
 
 	philos = arg;
 	rules = philos[0].rules;
-	while (!_are_dead(philos, rules))
+	while (true)
+	{
+		if (_all_are_dead(philos, rules))
+			break ;
+		if (_all_ate_enough(philos, rules))
+		{
+			k = 0;
+			while (k < rules->philosophers_nb)
+			{
+				pthread_mutex_lock(philos[k].meal_mutex);
+				philos[k].should_die = true;
+				pthread_mutex_unlock(philos[k].meal_mutex);
+				k++;
+			}
+		}
 		usleep(1000);
+	}
 	return (NULL);
 }

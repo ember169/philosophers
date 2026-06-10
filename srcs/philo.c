@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:55 by lgervet           #+#    #+#             */
-/*   Updated: 2026/05/24 14:23:03 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/10 11:35:43 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ static bool	try_to_eat_one(t_philo *philo)
 	if (!philo || !philo->left_fork || !philo->right_fork)
 		return (false);
 	pthread_mutex_lock(philo->left_fork);
+	print_state(philo->rules, get_uptime(philo->rules),
+		philo->id, "has taken a fork");
 	pthread_mutex_lock(philo->meal_mutex);
 	philo->last_meal_time = get_uptime(philo->rules);
 	philo->meals_eaten++;
@@ -56,18 +58,26 @@ static bool	try_to_eat(t_philo *philo)
 		if (philo->id % 2 == 0)
 		{
 			pthread_mutex_lock(philo->left_fork);
+			print_state(philo->rules, get_uptime(philo->rules),
+				philo->id, "has taken a fork");
 			pthread_mutex_lock(philo->right_fork);
+			print_state(philo->rules, philo->last_meal_time,
+				philo->id, "has taken a fork");
 		}
 		else
 		{
 			pthread_mutex_lock(philo->right_fork);
+			print_state(philo->rules, get_uptime(philo->rules),
+				philo->id, "has taken a fork");
 			pthread_mutex_lock(philo->left_fork);
+			print_state(philo->rules, get_uptime(philo->rules),
+				philo->id, "has taken a fork");
 		}
 		pthread_mutex_lock(philo->meal_mutex);
 		philo->last_meal_time = get_uptime(philo->rules);
 		philo->meals_eaten++;
-		print_state(philo->rules, philo->last_meal_time, \
-philo->id, "is eating");
+		print_state(philo->rules, philo->last_meal_time,
+			philo->id, "is eating");
 		pthread_mutex_unlock(philo->meal_mutex);
 		c_sleep(philo->rules->time_to_eat);
 		pthread_mutex_unlock(philo->left_fork);
@@ -79,6 +89,7 @@ philo->id, "is eating");
 /*
 ** routine:
 **     What every thread will do as soon as born: try to eat, sleep, think
+**		Returns immediately without dying if ate_enough
 */
 static void	*routine(void *arg)
 {
@@ -98,21 +109,19 @@ static void	*routine(void *arg)
 		pthread_mutex_unlock(philo->meal_mutex);
 		if (try_to_eat(philo))
 		{
-			if (philo->rules->must_eat_number > 0 && \
-(philo->meals_eaten >= philo->rules->must_eat_number))
+			if (philo->rules->must_eat_number > 0
+				&& (philo->meals_eaten >= philo->rules->must_eat_number))
 			{
-				print_state(philo->rules, get_uptime(philo->rules), \
-philo->id, "has eaten enough");
 				pthread_mutex_lock(philo->meal_mutex);
-				philo->should_die = 1;
+				philo->ate_enough = true;
 				pthread_mutex_unlock(philo->meal_mutex);
-				break ;
+				return (NULL);
 			}
-			print_state(philo->rules, get_uptime(philo->rules), \
-philo->id, "is sleeping");
+			print_state(philo->rules, get_uptime(philo->rules),
+				philo->id, "is sleeping");
 			c_sleep(philo->rules->time_to_sleep);
-			print_state(philo->rules, get_uptime(philo->rules), \
-philo->id, "is thinking");
+			print_state(philo->rules, get_uptime(philo->rules),
+				philo->id, "is thinking");
 		}
 		else
 			usleep(1000);
@@ -144,7 +153,6 @@ bool	spawn_philos(
 	pthread_mutex_t *forks)
 {
 	int	i;
-	int	res;
 
 	if (!philos || !rules || !forks)
 		return (false);
@@ -152,7 +160,8 @@ bool	spawn_philos(
 	while (i < n)
 	{
 		philos[i].id = i + 1;
-		philos[i].should_die = 0;
+		philos[i].should_die = false;
+		philos[i].ate_enough = false;
 		philos[i].meals_eaten = 0;
 		philos[i].meal_mutex = malloc(sizeof(pthread_mutex_t));
 		if (!philos[i].meal_mutex)
@@ -162,8 +171,8 @@ bool	spawn_philos(
 		philos[i].rules = rules;
 		philos[i].left_fork = &forks[i];
 		philos[i].right_fork = &forks[(i + 1) % n];
-		res = pthread_create(&philos[i].thread_id, NULL, &routine, &philos[i]);
-		if (res != 0)
+		if (pthread_create(&philos[i].thread_id, NULL, &routine, &philos[i])
+			!= 0)
 			return (false);
 		i++;
 	}
