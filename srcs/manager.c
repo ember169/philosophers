@@ -6,13 +6,18 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 16:59:17 by lgervet           #+#    #+#             */
-/*   Updated: 2026/06/11 13:04:24 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/11 14:28:49 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/includes.h"
 
-// check death condition for a single philo
+/*
+** _is_dead:
+**     Returns true when all one thread need to be terminated
+**
+**     @return true / false.
+*/
 static bool	_is_dead(t_philo *philo, t_rules *rules)
 {
 	bool	res;
@@ -32,8 +37,12 @@ static bool	_is_dead(t_philo *philo, t_rules *rules)
 	return (res);
 }
 
-// check death condition for every philos. If met for one
-// sets should_die to all
+/*
+** _all_are_dead:
+**     Returns true when all the threads need to be terminated
+**
+**     @return true / false.
+*/
 static bool	_all_are_dead(t_philo *philos, t_rules *rules)
 {
 	int	i;
@@ -59,6 +68,12 @@ static bool	_all_are_dead(t_philo *philos, t_rules *rules)
 	return (false);
 }
 
+/*
+** _all_ate_enough:
+**     Returns true when all the threads made the maximum cycle number
+**
+**     @return true / false.
+*/
 static bool	_all_ate_enough(t_philo *philos, t_rules *rules)
 {
 	int	i;
@@ -83,6 +98,13 @@ static bool	_all_ate_enough(t_philo *philos, t_rules *rules)
 	return (false);
 }
 
+/*
+** manage_philo:
+**     Thread manager: checks periodically if they are or should be terminated.
+**	   Returns when all need to be terminated.
+**
+**     @param arg	uncasted pointer to t_philo structure.
+*/
 void	*manage_philo(void *arg)
 {
 	t_philo	*philos;

@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 14:05:18 by lgervet           #+#    #+#             */
-/*   Updated: 2026/06/10 16:56:40 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/11 14:11:17 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 	   Asks to:
 		- allocate fork and initialize mutexes
 		- create philosophers threads
+	   Waits for:
+		- Manager end
 */
 int	main(int ac, char **av)
 {

@@ -6,12 +6,20 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:12:37 by lgervet           #+#    #+#             */
-/*   Updated: 2026/06/05 11:23:03 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/11 16:08:28 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/includes.h"
 
+/*
+** get_rules:
+**     Initializes and sets default values in t_rules struct
+**
+**     @param *rules  Pointer to t_rules structure
+**	   @param **av	  Arguments string array
+**     @return true if everything is fine / false if not
+*/
 bool	get_rules(t_rules *rules, char **av)
 {
 	rules->forks = NULL;
@@ -23,9 +31,9 @@ bool	get_rules(t_rules *rules, char **av)
 	rules->must_eat_number = -1;
 	if (av[5])
 		rules->must_eat_number = atoi(av[5]);
-	if ((rules->philosophers_nb < 1 || rules->time_to_die < 1 || \
-rules->time_to_eat < 1 || rules->time_to_sleep < 1) || \
-(av[5] && rules->must_eat_number < 1))
+	if ((rules->philosophers_nb < 1 || rules->time_to_die < 1
+			|| rules->time_to_eat < 1 || rules->time_to_sleep < 1)
+		|| (av[5] && rules->must_eat_number < 1))
 		return (false);
 	rules->print_mutex = malloc(sizeof(pthread_mutex_t));
 	if (!rules->print_mutex)

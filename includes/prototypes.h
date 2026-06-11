@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 14:05:04 by lgervet           #+#    #+#             */
-/*   Updated: 2026/06/10 16:56:30 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/11 15:09:44 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,6 @@ double	get_uptime(t_rules *rules);
 void	c_sleep(double ms);
 void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules);
 void	print_state(t_rules *rules, double t, int id, const char *msg);
+bool	could_eat(t_philo *philo);
 
 #endif

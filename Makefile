@@ -6,7 +6,7 @@
 #    By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/06 13:42:29 by lgervet           #+#    #+#              #
-#    Updated: 2026/05/24 13:27:10 by mskn             ###   ########.fr        #
+#    Updated: 2026/06/11 15:09:52 by mskn             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,8 @@ OBJSDIR		:= objs
 SRCS		:= \
 				main.c \
 				init.c \
-				philo.c \
+				philo_spawn.c \
+				philo_meals.c \
 				manager.c \
 				utils.c \
 				time.c

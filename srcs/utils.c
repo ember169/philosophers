@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:06 by lgervet           #+#    #+#             */
-/*   Updated: 2026/06/11 10:11:32 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/11 16:08:55 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,14 @@ static bool	_is_num(char *s)
 	return (true);
 }
 
+/*
+** valid_args:
+**     Checks if passed arguments are valid (5 or 6 of them, numerical only)
+**
+**     @param ac	argument number.
+**     @param **av	argument string array
+**	   @return true / false
+*/
 bool	valid_args(int ac, char **av)
 {
 	int	i;
@@ -42,6 +50,14 @@ bool	valid_args(int ac, char **av)
 	return (true);
 }
 
+/*
+** clean_exit:
+**     Exit wrapper in order to join every thread and free all allocated memory
+**
+**     @param *philo	Pointer to philos structure
+**     @param *forks	Pointer to forks structure
+**     @param *rules	Pointer to rules structure
+*/
 void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules)
 {
 	int	i;
@@ -71,20 +87,29 @@ void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules)
 
 /*
 ** c_sleep:
-**     Custom sleep that converts ms to us
+**     Custom sleep loop that usleep(100) until ms is reached
 **
-**     @param param  Description.
-**     @return Valeur retour.
+**     @param ms  value in ms.
 */
 void	c_sleep(double ms)
 {
 	double	start;
 
 	start = get_time_ms();
-	while (get_time_ms() - start < ms)
+	while ((get_time_ms() - start) < ms)
 		usleep(100);
 }
 
+/*
+** print_state:
+**     Wraps printf inside pthread_mutex locks
+**
+**     @param *rules	pointer to t_rules structure.
+**     @param t  		time to print (in ms).
+**     @param id  		philosopher id to print.
+**     @param msg  		msg to print.
+
+*/
 void	print_state(t_rules *rules, double t, int id, const char *msg)
 {
 	pthread_mutex_lock(rules->print_mutex);

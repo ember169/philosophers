@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 16:15:48 by lgervet           #+#    #+#             */
-/*   Updated: 2026/05/21 11:49:41 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/11 14:22:56 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,12 @@
 // Microseconds: tv.tv_usec
 // Minutes west of Greenwich: tz.tz_minuteswest
 
+/*
+** get_time_ms:
+**     Returns timestamp in ms
+**
+**	   @return double integer
+*/
 double	get_time_ms(void)
 {
 	struct timeval	tv;
