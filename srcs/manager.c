@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 16:59:17 by lgervet           #+#    #+#             */
-/*   Updated: 2026/06/10 11:36:46 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/11 13:04:24 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,13 @@ static bool	_is_dead(t_philo *philo, t_rules *rules)
 	res = false;
 	pthread_mutex_lock(philo->meal_mutex);
 	time_since_meal = get_uptime(rules) - philo->last_meal_time;
-	if (philo->should_die == true || time_since_meal > rules->time_to_die)
+	if (time_since_meal > rules->time_to_die)
 	{
 		philo->should_die = true;
-		res = true;
+		print_state(philo->rules, get_uptime(philo->rules), philo->id, "died");
 	}
+	if (philo->should_die == true)
+		res = true;
 	pthread_mutex_unlock(philo->meal_mutex);
 	return (res);
 }

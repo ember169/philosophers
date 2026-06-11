@@ -6,13 +6,14 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 14:05:04 by lgervet           #+#    #+#             */
-/*   Updated: 2026/05/24 14:12:13 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/10 16:56:30 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PROTOTYPES_H
 # define PROTOTYPES_H
 
+bool	valid_args(int ac, char **av);
 bool	get_rules(t_rules *rules, char **av);
 bool	alloc_forks(pthread_mutex_t *forks, int n);
 bool	initialize_threads(

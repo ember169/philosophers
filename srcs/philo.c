@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:55 by lgervet           #+#    #+#             */
-/*   Updated: 2026/06/10 11:35:43 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/11 13:13:17 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,25 @@
 */
 static bool	try_to_eat_one(t_philo *philo)
 {
-	if (!philo || !philo->left_fork || !philo->right_fork)
-		return (false);
-	pthread_mutex_lock(philo->left_fork);
-	print_state(philo->rules, get_uptime(philo->rules),
-		philo->id, "has taken a fork");
-	pthread_mutex_lock(philo->meal_mutex);
-	philo->last_meal_time = get_uptime(philo->rules);
-	philo->meals_eaten++;
-	print_state(philo->rules, philo->last_meal_time, philo->id, "is eating");
-	pthread_mutex_unlock(philo->meal_mutex);
-	c_sleep(philo->rules->time_to_eat);
-	pthread_mutex_unlock(philo->left_fork);
-	return (true);
+	if (philo && philo->left_fork && philo->right_fork)
+	{
+		pthread_mutex_lock(philo->left_fork);
+		print_state(philo->rules, get_uptime(philo->rules),
+			philo->id, "has taken a fork");
+		while (true)
+		{
+			pthread_mutex_lock(philo->meal_mutex);
+			if (philo->should_die)
+			{
+				pthread_mutex_unlock(philo->meal_mutex);
+				break ;
+			}
+			pthread_mutex_unlock(philo->meal_mutex);
+			usleep(1000);
+		}
+		pthread_mutex_unlock(philo->left_fork);
+	}
+	return (false);
 }
 
 /*
@@ -58,18 +64,40 @@ static bool	try_to_eat(t_philo *philo)
 		if (philo->id % 2 == 0)
 		{
 			pthread_mutex_lock(philo->left_fork);
+			pthread_mutex_lock(philo->meal_mutex);
+			if (philo->should_die)
+				return (pthread_mutex_unlock(philo->meal_mutex),
+					pthread_mutex_unlock(philo->left_fork), false);
+			pthread_mutex_unlock(philo->meal_mutex);
 			print_state(philo->rules, get_uptime(philo->rules),
 				philo->id, "has taken a fork");
 			pthread_mutex_lock(philo->right_fork);
-			print_state(philo->rules, philo->last_meal_time,
+			pthread_mutex_lock(philo->meal_mutex);
+			if (philo->should_die)
+				return (pthread_mutex_unlock(philo->meal_mutex),
+					pthread_mutex_unlock(philo->right_fork),
+					pthread_mutex_unlock(philo->left_fork), false);
+			pthread_mutex_unlock(philo->meal_mutex);
+			print_state(philo->rules, get_uptime(philo->rules),
 				philo->id, "has taken a fork");
 		}
 		else
 		{
 			pthread_mutex_lock(philo->right_fork);
+			pthread_mutex_lock(philo->meal_mutex);
+			if (philo->should_die)
+				return (pthread_mutex_unlock(philo->meal_mutex),
+					pthread_mutex_unlock(philo->right_fork), false);
+			pthread_mutex_unlock(philo->meal_mutex);
 			print_state(philo->rules, get_uptime(philo->rules),
 				philo->id, "has taken a fork");
 			pthread_mutex_lock(philo->left_fork);
+			pthread_mutex_lock(philo->meal_mutex);
+			if (philo->should_die)
+				return (pthread_mutex_unlock(philo->meal_mutex),
+					pthread_mutex_unlock(philo->left_fork),
+					pthread_mutex_unlock(philo->right_fork), false);
+			pthread_mutex_unlock(philo->meal_mutex);
 			print_state(philo->rules, get_uptime(philo->rules),
 				philo->id, "has taken a fork");
 		}
@@ -98,6 +126,14 @@ static void	*routine(void *arg)
 	if (!arg)
 		return (NULL);
 	philo = (t_philo *)arg;
+	if (philo->id > 1 && philo->rules->philosophers_nb > 1)
+	{
+		c_sleep((philo->id - 1) * philo->rules->time_to_eat
+			/ philo->rules->philosophers_nb);
+		pthread_mutex_lock(philo->meal_mutex);
+		philo->last_meal_time = get_uptime(philo->rules);
+		pthread_mutex_unlock(philo->meal_mutex);
+	}
 	while (true)
 	{
 		pthread_mutex_lock(philo->meal_mutex);
@@ -117,16 +153,23 @@ static void	*routine(void *arg)
 				pthread_mutex_unlock(philo->meal_mutex);
 				return (NULL);
 			}
+			pthread_mutex_lock(philo->meal_mutex);
+			if (philo->should_die)
+				return (pthread_mutex_unlock(philo->meal_mutex), NULL);
+			pthread_mutex_unlock(philo->meal_mutex);
 			print_state(philo->rules, get_uptime(philo->rules),
 				philo->id, "is sleeping");
 			c_sleep(philo->rules->time_to_sleep);
+			pthread_mutex_lock(philo->meal_mutex);
+			if (philo->should_die)
+				return (pthread_mutex_unlock(philo->meal_mutex), NULL);
+			pthread_mutex_unlock(philo->meal_mutex);
 			print_state(philo->rules, get_uptime(philo->rules),
 				philo->id, "is thinking");
 		}
 		else
 			usleep(1000);
 	}
-	print_state(philo->rules, get_uptime(philo->rules), philo->id, "died");
 	return (NULL);
 }
 

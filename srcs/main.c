@@ -6,7 +6,7 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 14:05:18 by lgervet           #+#    #+#             */
-/*   Updated: 2026/05/21 18:14:29 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/10 16:56:40 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	main(int ac, char **av)
 	t_rules			rules;
 	pthread_mutex_t	*forks;
 
-	if (ac < 5)
+	if (!valid_args(ac, av))
 		return (1);
 	if (!get_rules(&rules, av))
 		return (1);

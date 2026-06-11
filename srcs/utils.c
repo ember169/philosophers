@@ -6,11 +6,41 @@
 /*   By: mskn <mskn@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 15:50:06 by lgervet           #+#    #+#             */
-/*   Updated: 2026/06/10 10:48:05 by mskn             ###   ########.fr       */
+/*   Updated: 2026/06/11 10:11:32 by mskn             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/includes.h"
+
+static bool	_is_num(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		if (!(s[i] >= '0' && s[i] <= '9'))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+bool	valid_args(int ac, char **av)
+{
+	int	i;
+
+	if ((ac < 5 || ac > 6) || !av)
+		return (false);
+	i = 1;
+	while (av[i])
+	{
+		if (strlen(av[i]) > 9 || !_is_num(av[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
 
 void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules)
 {
@@ -48,7 +78,11 @@ void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules)
 */
 void	c_sleep(double ms)
 {
-	usleep(ms * 1000);
+	double	start;
+
+	start = get_time_ms();
+	while (get_time_ms() - start < ms)
+		usleep(100);
 }
 
 void	print_state(t_rules *rules, double t, int id, const char *msg)
