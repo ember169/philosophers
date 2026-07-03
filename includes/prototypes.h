@@ -31,5 +31,6 @@ void	c_sleep(double ms);
 void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules);
 void	print_state(t_rules *rules, double t, int id, const char *msg);
 bool	could_eat(t_philo *philo);
+void	*ft_calloc(size_t nmemb, size_t size);
 
 #endif

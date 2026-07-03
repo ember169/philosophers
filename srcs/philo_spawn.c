@@ -28,7 +28,10 @@ static bool	_needs_termination(t_philo *philo)
 	}
 	pthread_mutex_lock(philo->meal_mutex);
 	if (philo->should_die)
-		return (pthread_mutex_unlock(philo->meal_mutex), true);
+	{
+		pthread_mutex_unlock(philo->meal_mutex);
+		return (true);
+	}
 	pthread_mutex_unlock(philo->meal_mutex);
 	return (false);
 }
@@ -83,6 +86,29 @@ static void	*routine(void *arg)
 	return (NULL);
 }
 
+static bool	_set_philo_up(t_philo *philo, int i, int n, t_rules *rules,
+	pthread_mutex_t *forks)
+{
+	philo->id = i + 1;
+	philo->should_die = false;
+	philo->ate_enough = false;
+	philo->meals_eaten = 0;
+	philo->meal_mutex = ft_calloc(1, sizeof(pthread_mutex_t));
+	if (!philo->meal_mutex)
+		return (false);
+	if (pthread_mutex_init(philo->meal_mutex, NULL))
+	{
+		free(philo->meal_mutex);
+		philo->meal_mutex = NULL;
+		return (false);
+	}
+	philo->last_meal_time = get_uptime(rules);
+	philo->rules = rules;
+	philo->left_fork = &forks[i];
+	philo->right_fork = &forks[(i + 1) % n];
+	return (true);
+}
+
 /*
 ** spawn_philos:
 **     Allocate and initializes everything needed for each thread:
@@ -94,10 +120,7 @@ static void	*routine(void *arg)
 **     @param *forks	Pointer to forks array
 **     @return true / false if failure.
 */
-bool	spawn_philos(
-	t_philo *philos,
-	int n,
-	t_rules *rules,
+bool	spawn_philos(t_philo *philos, int n, t_rules *rules,
 	pthread_mutex_t *forks)
 {
 	int	i;
@@ -107,20 +130,9 @@ bool	spawn_philos(
 	i = 0;
 	while (i < n)
 	{
-		philos[i].id = i + 1;
-		philos[i].should_die = false;
-		philos[i].ate_enough = false;
-		philos[i].meals_eaten = 0;
-		philos[i].meal_mutex = malloc(sizeof(pthread_mutex_t));
-		if (!philos[i].meal_mutex)
+		if (!_set_philo_up(&philos[i], i, n, rules, forks))
 			return (false);
-		pthread_mutex_init(philos[i].meal_mutex, NULL);
-		philos[i].last_meal_time = get_uptime(rules);
-		philos[i].rules = rules;
-		philos[i].left_fork = &forks[i];
-		philos[i].right_fork = &forks[(i + 1) % n];
-		if (pthread_create(&philos[i].thread_id, NULL, &routine, &philos[i])
-			!= 0)
+		if (pthread_create(&philos[i].thread_id, NULL, &routine, &philos[i]))
 			return (false);
 		i++;
 	}

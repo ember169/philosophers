@@ -20,6 +20,7 @@ OBJSDIR		:= objs
 
 SRCS		:= \
 				main.c \
+				exit.c \
 				init.c \
 				philo_spawn.c \
 				philo_meals.c \

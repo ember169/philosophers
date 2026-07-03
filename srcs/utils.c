@@ -51,41 +51,6 @@ bool	valid_args(int ac, char **av)
 }
 
 /*
-** clean_exit:
-**     Exit wrapper in order to join every thread and free all allocated memory
-**
-**     @param *philo	Pointer to philos structure
-**     @param *forks	Pointer to forks structure
-**     @param *rules	Pointer to rules structure
-*/
-void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules)
-{
-	int	i;
-	int	philos_nb;
-
-	if (!philos || !forks)
-		return ;
-	i = 0;
-	philos_nb = rules->philosophers_nb;
-	while (i < philos_nb)
-	{
-		pthread_join(philos[i].thread_id, NULL);
-		free(philos[i].meal_mutex);
-		i++;
-	}
-	free(philos);
-	i = 0;
-	while (i < philos_nb)
-	{
-		pthread_mutex_destroy(&forks[i]);
-		i++;
-	}
-	free(forks);
-	pthread_mutex_destroy(rules->print_mutex);
-	free(rules->print_mutex);
-}
-
-/*
 ** c_sleep:
 **     Custom sleep loop that usleep(100) until ms is reached
 **
@@ -108,11 +73,32 @@ void	c_sleep(double ms)
 **     @param t  		time to print (in ms).
 **     @param id  		philosopher id to print.
 **     @param msg  		msg to print.
-
 */
 void	print_state(t_rules *rules, double t, int id, const char *msg)
 {
 	pthread_mutex_lock(rules->print_mutex);
 	printf("%ld %d %s\n", (long)t, id, msg);
 	pthread_mutex_unlock(rules->print_mutex);
+}
+
+/*
+** ft_calloc:
+**     Allocates memory and memset it to zero
+*/
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	void			*buffer;
+	int				total_size;
+	unsigned char	*str;
+
+	if (nmemb == 0 && size == 0)
+		return (NULL);
+	total_size = nmemb * size;
+	buffer = malloc(total_size);
+	if (!buffer)
+		return (NULL);
+	str = (unsigned char *) buffer;
+	while (total_size--)
+		*str++ = 0;
+	return (buffer);
 }

@@ -15,15 +15,15 @@
 /*
 ** main:
 **     Creates:
-		- rule set structure
-		- philosophers structure
-		- fork structure
-		- philosopher manager thread
-	   Asks to:
-		- allocate fork and initialize mutexes
-		- create philosophers threads
-	   Waits for:
-		- Manager end
+**		- rule set structure
+**		- philosophers structure
+**		- fork structure
+**		- philosopher manager thread
+**	   Asks to:
+**		- allocate fork and initialize mutexes
+**		- create philosophers threads
+**	   Waits for:
+**		- Manager end
 */
 int	main(int ac, char **av)
 {
@@ -35,10 +35,13 @@ int	main(int ac, char **av)
 		return (1);
 	if (!get_rules(&rules, av))
 		return (1);
-	philosophers = malloc(rules.philosophers_nb * sizeof(t_philo));
+	philosophers = ft_calloc(rules.philosophers_nb, sizeof(t_philo));
 	if (!philosophers)
-		return (2);
-	forks = malloc(rules.philosophers_nb * sizeof(pthread_mutex_t));
+	{
+		pthread_mutex_destroy(rules.print_mutex);
+		return (free(rules.print_mutex), 1);
+	}
+	forks = ft_calloc(rules.philosophers_nb, sizeof(pthread_mutex_t));
 	if (!forks || !alloc_forks(forks, rules.philosophers_nb))
 		return (clean_exit(philosophers, forks, &rules), 1);
 	if (!initialize_threads(philosophers, &rules, forks))

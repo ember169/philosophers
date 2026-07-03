@@ -52,6 +52,13 @@ static bool	_dispatch_single(t_philo *philo)
 static bool	_eat(t_philo *philo)
 {
 	pthread_mutex_lock(philo->meal_mutex);
+	if (philo->should_die)
+	{
+		pthread_mutex_unlock(philo->meal_mutex);
+		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(philo->right_fork);
+		return (false);
+	}
 	philo->last_meal_time = get_uptime(philo->rules);
 	philo->meals_eaten++;
 	print_state(philo->rules, philo->last_meal_time,
@@ -77,9 +84,9 @@ static bool	_dispatch_even(t_philo *philo)
 	if (philo->should_die)
 		return (pthread_mutex_unlock(philo->meal_mutex),
 			pthread_mutex_unlock(philo->left_fork), false);
-	pthread_mutex_unlock(philo->meal_mutex);
 	print_state(philo->rules, get_uptime(philo->rules),
 		philo->id, "has taken a fork");
+	pthread_mutex_unlock(philo->meal_mutex);
 	pthread_mutex_lock(philo->right_fork);
 	pthread_mutex_lock(philo->meal_mutex);
 	if (philo->should_die)
@@ -88,9 +95,9 @@ static bool	_dispatch_even(t_philo *philo)
 			pthread_mutex_unlock(philo->right_fork),
 			pthread_mutex_unlock(philo->left_fork), false);
 	}
-	pthread_mutex_unlock(philo->meal_mutex);
 	print_state(philo->rules, get_uptime(philo->rules),
 		philo->id, "has taken a fork");
+	pthread_mutex_unlock(philo->meal_mutex);
 	return (_eat(philo));
 }
 
@@ -108,18 +115,18 @@ static bool	_dispatch_odd(t_philo *philo)
 	if (philo->should_die)
 		return (pthread_mutex_unlock(philo->meal_mutex),
 			pthread_mutex_unlock(philo->right_fork), false);
-	pthread_mutex_unlock(philo->meal_mutex);
 	print_state(philo->rules, get_uptime(philo->rules),
 		philo->id, "has taken a fork");
+	pthread_mutex_unlock(philo->meal_mutex);
 	pthread_mutex_lock(philo->left_fork);
 	pthread_mutex_lock(philo->meal_mutex);
 	if (philo->should_die)
 		return (pthread_mutex_unlock(philo->meal_mutex),
 			pthread_mutex_unlock(philo->left_fork),
 			pthread_mutex_unlock(philo->right_fork), false);
-	pthread_mutex_unlock(philo->meal_mutex);
 	print_state(philo->rules, get_uptime(philo->rules),
 		philo->id, "has taken a fork");
+	pthread_mutex_unlock(philo->meal_mutex);
 	return (_eat(philo));
 }
 

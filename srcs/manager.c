@@ -25,11 +25,14 @@ static bool	_is_dead(t_philo *philo, t_rules *rules)
 
 	res = false;
 	pthread_mutex_lock(philo->meal_mutex);
-	time_since_meal = get_uptime(rules) - philo->last_meal_time;
-	if (time_since_meal > rules->time_to_die)
+	if (!philo->ate_enough)
 	{
-		philo->should_die = true;
-		print_state(philo->rules, get_uptime(philo->rules), philo->id, "died");
+		time_since_meal = get_uptime(rules) - philo->last_meal_time;
+		if (time_since_meal > rules->time_to_die)
+		{
+			philo->should_die = true;
+			print_state(philo->rules, get_uptime(philo->rules), philo->id, "died");
+		}
 	}
 	if (philo->should_die == true)
 		res = true;

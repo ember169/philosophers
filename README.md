@@ -122,4 +122,9 @@ Run the program with the following arguments:
 - **Vizualisation & debugging**:[Philogramm](https://github.com/sugoidesune/42philogramm), [Data Race detection (-fsanitize=thread)](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual)
 
 ### AI Usage
-*Building...*
+- Documentation hierarchy
+- Code architecture documentation
+- Key concepts of multithreading vulgarization
+- Mutex architecture rework to safely print (`rules->print_mutex`)
+- Batch testing
+- Diagnose a deadlock risk in my philosopher loop
