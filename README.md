@@ -34,28 +34,34 @@ This project is a simulation of the classic synchronization problem. Several phi
           ▼
        main.c
   ┌──────────────────────────────────────────────────────────┐
-  │  1. get_rules()       → parse args into t_rules          │
-  │  2. malloc(t_philo[]) → array of N philosophers          │
-  │  3. malloc(mutex[])   → array of N fork mutexes          │
-  │  4. alloc_forks()     → pthread_mutex_init each fork     │
-  │  5. initialize_threads()                                 │
-  │       ├─ create_threads() → spawn N philo threads        │
-  │       └─ pthread_create  → spawn 1 manager thread        │
-  │  6. pthread_join(manager) → wait for simulation end      │
-  │  7. (main calls clean_exit on exit)                   │
+  │  1. valid_args()      → validate ac/av                    │
+  │  2. get_rules()       → parse args into t_rules           │
+  │  3. ft_calloc(t_philo[]) → array of N philosophers        │
+  │  4. ft_calloc(mutex[])   → array of N fork mutexes        │
+  │  5. alloc_forks()     → pthread_mutex_init each fork      │
+  │  6. initialize_threads()                                  │
+  │       ├─ spawn_philos()  → spawn N philo threads          │
+  │       └─ pthread_create  → spawn 1 manager thread         │
+  │  7. pthread_join(manager) → wait for simulation end       │
+  │  8. clean_exit()      → join philos, destroy/free all     │
   └──────────────────────────────────────────────────────────┘
 
 Philosopher threads (routine):          Manager thread (manage_philo):
-  while (!should_die):                    infinite loop:
-    try_to_eat()                            for each philo:
-      lock left_fork                          check time since last meal
-      lock right_fork                         if > time_to_die → mark dead
-      update last_meal_time (meal_mutex)    if any dead → clean_exit()
-      sleep(time_to_eat)
-      unlock forks
-    sleep(time_to_sleep)
-    think
-  print "died"
+  loop until should_die                   loop:
+  or meals_eaten == must_eat_nb:            for each philo not already
+    lock 1st fork, then 2nd fork              ate_enough: if time since
+      (even id: left then right;              last meal > time_to_die
+       odd id: right then left)               → should_die = true,
+    [should_die checked before each             print "died"
+     lock/print; forks released if so]        if any should_die → break
+    lock meal_mutex, re-check should_die      if all reached must_eat_nb
+    update last_meal_time, meals_eaten++        → should_die = true
+    print "is eating"; sleep(time_to_eat)        for everyone
+    unlock both forks                       (never calls clean_exit() —
+    print "is sleeping"; sleep(time_to_sleep)  main() does that once this
+    print "is thinking"                       thread returns from join)
+  (exits silently unless the manager
+   printed "died" for this philosopher)
 ```
 
 **Data structures:**
