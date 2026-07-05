@@ -65,7 +65,7 @@ static void	_routine_loop(t_philo *philo)
 
 /*
 ** routine:
-**     Sets last_meal_time at startup time, then call the thread loop
+**     Calls the thread loop; last_meal_time was already set in _set_philo_up
 */
 static void	*routine(void *arg)
 {
@@ -74,19 +74,11 @@ static void	*routine(void *arg)
 	if (!arg)
 		return (NULL);
 	philo = (t_philo *)arg;
-	if (philo->id > 1 && philo->rules->philosophers_nb > 1)
-	{
-		c_sleep((philo->id - 1) * philo->rules->time_to_eat
-			/ philo->rules->philosophers_nb);
-		pthread_mutex_lock(philo->meal_mutex);
-		philo->last_meal_time = get_uptime(philo->rules);
-		pthread_mutex_unlock(philo->meal_mutex);
-	}
 	_routine_loop(philo);
 	return (NULL);
 }
 
-static bool	_set_philo_up(t_philo *philo, int i, int n, t_rules *rules,
+static bool	_set_philo_up(t_philo *philo, int i, t_rules *rules,
 	pthread_mutex_t *forks)
 {
 	philo->id = i + 1;
@@ -105,7 +97,7 @@ static bool	_set_philo_up(t_philo *philo, int i, int n, t_rules *rules,
 	philo->last_meal_time = get_uptime(rules);
 	philo->rules = rules;
 	philo->left_fork = &forks[i];
-	philo->right_fork = &forks[(i + 1) % n];
+	philo->right_fork = &forks[(i + 1) % rules->philosophers_nb];
 	return (true);
 }
 
@@ -130,7 +122,7 @@ bool	spawn_philos(t_philo *philos, int n, t_rules *rules,
 	i = 0;
 	while (i < n)
 	{
-		if (!_set_philo_up(&philos[i], i, n, rules, forks))
+		if (!_set_philo_up(&philos[i], i, rules, forks))
 			return (false);
 		if (pthread_create(&philos[i].thread_id, NULL, &routine, &philos[i]))
 			return (false);

@@ -21,7 +21,8 @@
 static bool	_is_dead(t_philo *philo, t_rules *rules)
 {
 	bool	res;
-	int		time_since_meal;
+	double	time_since_meal;
+	double	death_time;
 
 	res = false;
 	pthread_mutex_lock(philo->meal_mutex);
@@ -31,7 +32,8 @@ static bool	_is_dead(t_philo *philo, t_rules *rules)
 		if (time_since_meal > rules->time_to_die)
 		{
 			philo->should_die = true;
-			print_state(philo->rules, get_uptime(philo->rules), philo->id, "died");
+			death_time = get_uptime(philo->rules);
+			print_state(philo->rules, death_time, philo->id, "died");
 		}
 	}
 	if (philo->should_die == true)

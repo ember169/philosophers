@@ -12,9 +12,9 @@
 
 #include "../includes/includes.h"
 
-static void _destroy_philos(t_philo *philos, t_rules *rules)
+static void	_destroy_philos(t_philo *philos, t_rules *rules)
 {
-    int	i;
+	int	i;
 
 	if (philos)
 	{
@@ -23,29 +23,29 @@ static void _destroy_philos(t_philo *philos, t_rules *rules)
 		{
 			if (philos[i].thread_id)
 				pthread_join(philos[i].thread_id, NULL);
-            if (philos[i].meal_mutex)
-            {
-                pthread_mutex_destroy(philos[i].meal_mutex);
-                free(philos[i].meal_mutex);
-            }
-            i++;
+			if (philos[i].meal_mutex)
+			{
+				pthread_mutex_destroy(philos[i].meal_mutex);
+				free(philos[i].meal_mutex);
+			}
+			i++;
 		}
 	}
 	free(philos);
 }
 
-static void _destroy_forks(pthread_mutex_t *forks, t_rules *rules)
+static void	_destroy_forks(pthread_mutex_t *forks, t_rules *rules)
 {
-    int	i;
+	int	i;
 
 	if (rules->forks)
 	{
 		i = 0;
 		while (i < rules->philosophers_nb)
-        {
+		{
 			pthread_mutex_destroy(&forks[i]);
-            i++;
-        }
+			i++;
+		}
 	}
 	free(forks);
 }
@@ -61,7 +61,7 @@ static void _destroy_forks(pthread_mutex_t *forks, t_rules *rules)
 void	clean_exit(t_philo *philos, pthread_mutex_t *forks, t_rules *rules)
 {
 	_destroy_philos(philos, rules);
-    _destroy_forks(forks, rules);
+	_destroy_forks(forks, rules);
 	pthread_mutex_destroy(rules->print_mutex);
 	free(rules->print_mutex);
 }
